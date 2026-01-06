@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Comment - PhotoShare{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="card-dark rounded-2xl p-10 text-center border-2 border-red-500/30 neon-glow">
+        <div class="mb-6">
+            <i class="fas fa-exclamation-triangle text-red-500 text-6xl mb-6 animate-pulse"></i>
+        </div>
+        <h2 class="text-3xl font-bold text-slate-100 mb-4">Delete Comment</h2>
+        <p class="text-slate-300 mb-8 text-lg">Are you sure you want to delete this comment? This action cannot be undone.</p>
+        
+        <!-- Comment Preview -->
+        <div class="bg-slate-800/50 rounded-xl p-6 mb-8 text-left border border-slate-700">
+            <div class="flex items-start">
+                <i class="fas fa-quote-left text-cyan-400/30 text-2xl mr-3"></i>
+                <div class="flex-1">
+                    <p class="text-slate-200 mb-3 leading-relaxed">{{ comment.content }}</p>
+                    <p class="text-sm text-slate-500 flex items-center">
+                        <i class="far fa-clock mr-2"></i>
+                        {{ comment.created_at|timesince }} ago
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex justify-center space-x-4">
+            <a href="{% url 'photos:detail' comment.photo.id %}" 
+               class="px-8 py-3.5 border border-slate-600 rounded-xl text-slate-300 hover:bg-slate-700/50 transition-all font-semibold">
+                <i class="fas fa-times mr-2"></i>Cancel
+            </a>
+            <form method="post" class="inline">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="px-8 py-3.5 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all font-bold shadow-lg hover:shadow-red-500/50">
+                    <i class="fas fa-trash-alt mr-2"></i>Delete Comment
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block title %}Photo by {{ photo.user.username }} - PhotoShare{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <div class="card-dark rounded-2xl overflow-hidden neon-glow">
+        <div class="md:flex">
+            <!-- Photo -->
+            <div class="md:w-3/5 bg-black flex items-center justify-center">
+                <img src="{{ photo.get_image_url }}" alt="Photo by {{ photo.user.username }}" 
+                     class="w-full h-auto object-contain max-h-[700px]">
+            </div>
+            
+            <!-- Photo Details -->
+            <div class="md:w-2/5 flex flex-col bg-gradient-to-b from-slate-800 to-slate-900">
+                <!-- Header -->
+                <div class="p-5 border-b border-slate-700/50">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <a href="{% url 'accounts:profile' photo.user.username %}">
+                                {% if photo.user.profile_photo and photo.user.profile_photo.file %}
+                                    <img src="{{ photo.user.profile_photo.file.url }}" alt="{{ photo.user.username }}" 
+                                         class="w-12 h-12 rounded-full object-cover border-2 border-cyan-500 neon-glow">
+                                {% else %}
+                                    <div class="w-12 h-12 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-full flex items-center justify-center neon-glow">
+                                        <i class="fas fa-user text-white"></i>
+                                    </div>
+                                {% endif %}
+                            </a>
+                            <div class="ml-3">
+                                <a href="{% url 'accounts:profile' photo.user.username %}" 
+                                   class="font-bold text-slate-100 hover:text-cyan-400 transition-colors">
+                                    {{ photo.user.username }}
+                                </a>
+                            </div>
+                        </div>
+                        {% if user.is_authenticated and user == photo.user %}
+                            <a href="{% url 'photos:delete_photo' photo.id %}" 
+                               class="text-red-400 hover:text-red-300 transition-colors">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Comments Section -->
+                <div class="flex-1 overflow-y-auto max-h-[450px] p-5 scrollbar-hidden">
+                    <!-- Caption -->
+                    {% if photo.caption %}
+                        <div class="mb-5 pb-5 border-b border-slate-700/30">
+                            <div class="flex items-start">
+                                {% if photo.user.profile_photo and photo.user.profile_photo.file %}
+                                    <img src="{{ photo.user.profile_photo.file.url }}" alt="{{ photo.user.username }}" 
+                                         class="w-9 h-9 rounded-full object-cover border-2 border-cyan-500/50 mr-3">
+                                {% else %}
+                                    <div class="w-9 h-9 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-user text-white text-xs"></i>
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <p class="text-slate-100">
+                                        <a href="{% url 'accounts:profile' photo.user.username %}" 
+                                           class="font-bold hover:text-cyan-400 transition-colors">{{ photo.user.username }}</a>
+                                        <span class="text-slate-300 ml-2">{{ photo.caption }}</span>
+                                    </p>
+                                    <p class="text-xs text-slate-500 mt-1">{{ photo.created_at|timesince }} ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Comments -->
+                    {% for comment in comments %}
+                        <div class="mb-5 flex items-start">
+                            {% if comment.user.profile_photo and comment.user.profile_photo.file %}
+                                <img src="{{ comment.user.profile_photo.file.url }}" alt="{{ comment.user.username }}" 
+                                     class="w-9 h-9 rounded-full object-cover border-2 border-cyan-500/50 mr-3">
+                            {% else %}
+                                <div class="w-9 h-9 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-user text-white text-xs"></i>
+                                </div>
+                            {% endif %}
+                            <div class="flex-1">
+                                <p class="text-slate-100">
+                                    <a href="{% url 'accounts:profile' comment.user.username %}" 
+                                       class="font-bold hover:text-cyan-400 transition-colors">{{ comment.user.username }}</a>
+                                    <span class="text-slate-300 ml-2">{{ comment.content }}</span>
+                                </p>
+                                <div class="flex items-center mt-1 space-x-4">
+                                    <p class="text-xs text-slate-500">{{ comment.created_at|timesince }} ago</p>
+                                    {% if user.is_authenticated and user == comment.user %}
+                                        <a href="{% url 'photos:delete_comment' comment.id %}" 
+                                           class="text-xs text-red-400 hover:text-red-300 transition-colors font-semibold">
+                                            Delete
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-12">
+                            <i class="fas fa-comments gradient-text text-5xl mb-4"></i>
+                            <p class="text-slate-400">No comments yet. Be the first to comment!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Actions and Comment Form -->
+                <div class="border-t border-slate-700/50 p-5 bg-slate-900/50">
+                    <!-- Like and Action Buttons -->
+                    <div class="flex items-center justify-between mb-5">
+                        <div class="flex items-center space-x-5">
+                            {% if user.is_authenticated %}
+                                <button onclick="toggleLike({{ photo.id }})" 
+                                        id="like-btn-{{ photo.id }}"
+                                        class="hover:scale-110 transition-transform">
+                                    {% if is_liked %}
+                                        <i class="fas fa-heart text-red-500 text-2xl"></i>
+                                    {% else %}
+                                        <i class="far fa-heart text-slate-400 text-2xl hover:text-red-500"></i>
+                                    {% endif %}
+                                </button>
+                            {% else %}
+                                <i class="far fa-heart text-slate-600 text-2xl"></i>
+                            {% endif %}
+                            
+                            <button class="hover:scale-110 transition-transform">
+                                <i class="far fa-bookmark text-slate-400 text-2xl hover:text-yellow-400"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Like Count -->
+                    <p class="font-bold text-slate-100 mb-3 text-base">
+                        <span id="like-count-{{ photo.id }}">{{ photo.like_count }}</span> 
+                        like{{ photo.like_count|pluralize }}
+                    </p>
+                    
+                    <!-- Posted Time -->
+                    <p class="text-xs text-slate-500 mb-5 uppercase tracking-wide">{{ photo.created_at|date:"F j, Y" }}</p>
+                    
+                    <!-- Comment Form -->
+                    {% if user.is_authenticated %}
+                        <form action="{% url 'photos:add_comment' photo.id %}" method="post" class="border-t border-slate-700/50 pt-4">
+                            {% csrf_token %}
+                            <div class="flex items-center space-x-3">
+                                {{ comment_form.content }}
+                                <button type="submit" 
+                                        class="text-cyan-400 hover:text-cyan-300 transition-colors font-bold">
+                                    Post
+                                </button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="text-center border-t border-slate-700/50 pt-4">
+                            <p class="text-slate-400 text-sm mb-3">Sign in to like and comment</p>
+                            <a href="{% url 'accounts:login' %}" 
+                               class="btn-primary text-white px-6 py-2.5 rounded-xl text-sm font-semibold inline-block">
+                                Log In
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Back to Home -->
+    <div class="mt-8 text-center">
+        <a href="{% url 'photos:home' %}" 
+           class="text-cyan-400 hover:text-cyan-300 transition-colors font-semibold inline-flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i>Back to Feed
+        </a>
+    </div>
+</div>
+
+{% csrf_token %}
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ profile_user.username }} - PhotoShare{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <!-- Profile Header -->
+    <div class="card-dark rounded-2xl p-10 mb-10 neon-glow">
+        <div class="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-10">
+            <!-- Profile Photo -->
+            <div class="flex-shrink-0">
+                {% if profile_user.profile_photo and profile_user.profile_photo.file %}
+                    <img src="{{ profile_user.profile_photo.file.url }}" alt="{{ profile_user.username }}" 
+                         class="w-40 h-40 rounded-full object-cover border-4 border-cyan-500 neon-glow">
+                {% else %}
+                    <div class="w-40 h-40 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-full flex items-center justify-center border-4 border-cyan-500 neon-glow">
+                        <i class="fas fa-user text-white text-6xl"></i>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Profile Info -->
+            <div class="flex-1 text-center md:text-left">
+                <div class="flex flex-col md:flex-row md:items-center mb-5">
+                    <h1 class="text-3xl font-bold text-slate-100 mb-3 md:mb-0 md:mr-6">{{ profile_user.username }}</h1>
+                    {% if user == profile_user %}
+                        <a href="{% url 'accounts:edit_profile' %}" 
+                           class="inline-flex items-center px-6 py-3 bg-slate-700/50 text-slate-200 rounded-xl hover:bg-slate-700 transition-all border border-slate-600 font-semibold">
+                            <i class="fas fa-edit mr-2"></i>Edit Profile
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <!-- Stats -->
+                <div class="flex justify-center md:justify-start space-x-10 mb-6">
+                    <div class="text-center">
+                        <span class="block text-2xl font-bold text-slate-100 mb-1">{{ photo_count }}</span>
+                        <span class="text-slate-400 text-sm uppercase tracking-wide">post{{ photo_count|pluralize }}</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="block text-2xl font-bold gradient-text mb-1">{{ profile_user.photos.count }}</span>
+                        <span class="text-slate-400 text-sm uppercase tracking-wide">photos</span>
+                    </div>
+                </div>
+                
+                <!-- User Info -->
+                <div class="space-y-2">
+                    {% if profile_user.first_name or profile_user.last_name %}
+                        <p class="font-bold text-slate-100 text-lg">
+                            {{ profile_user.first_name }} {{ profile_user.last_name }}
+                        </p>
+                    {% endif %}
+                    
+                    {% if profile_user.bio %}
+                        <p class="text-slate-300 leading-relaxed">{{ profile_user.bio }}</p>
+                    {% endif %}
+                    
+                    {% if profile_user.website %}
+                        <p>
+                            <a href="{{ profile_user.website }}" 
+                               target="_blank" 
+                               class="text-cyan-400 hover:text-cyan-300 transition-colors inline-flex items-center">
+                                <i class="fas fa-external-link-alt mr-2"></i>
+                                {{ profile_user.website|slice:"8:" }}
+                            </a>
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div> 
+    </div>
+    
+    <!-- Photos Grid -->
+    {% if photos %}
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-slate-100 mb-6"><i class="fas fa-images gradient-text mr-3"></i>Photos</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for photo in photos %}
+                <div class="card-dark rounded-2xl overflow-hidden hover-scale group">
+                    <a href="{% url 'photos:detail' photo.id %}">
+                        <div class="aspect-square overflow-hidden bg-black">
+                            <img src="{{ photo.get_image_url }}" alt="Photo by {{ profile_user.username }}" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                    </a>
+                    
+                    <!-- Photo Stats Overlay -->
+                    <div class="p-5 bg-gradient-to-t from-slate-900 to-slate-800">
+                        <div class="flex items-center justify-between text-sm text-slate-300 mb-3">
+                            <div class="flex items-center space-x-4">
+                                <span class="flex items-center hover:text-red-400 transition-colors">
+                                    <i class="far fa-heart mr-2"></i>
+                                    {{ photo.like_count }}
+                                </span>
+                                <span class="flex items-center hover:text-blue-400 transition-colors">
+                                    <i class="far fa-comment mr-2"></i>
+                                    {{ photo.comment_count }}
+                                </span>
+                            </div>
+                            <span class="text-slate-500 text-xs">{{ photo.created_at|timesince }} ago</span>
+                        </div>
+                        
+                        {% if photo.caption %}
+                            <p class="text-slate-200 text-sm leading-relaxed">
+                                {{ photo.caption|truncatewords:15 }}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-20 card-dark rounded-2xl">
+            <i class="fas fa-camera gradient-text text-7xl mb-6"></i>
+            <h3 class="text-2xl font-bold text-slate-100 mb-3">No Photos Yet</h3>
+            {% if user == profile_user %}
+                <p class="text-slate-400 mb-8 text-lg">Share your first photo with the world</p>
+                <a href="{% url 'photos:upload' %}" 
+                   class="btn-primary text-white px-8 py-4 rounded-xl font-semibold inline-flex items-center text-lg">
+                    <i class="fas fa-plus mr-2"></i>
+                    Upload Photo
+                </a>
+            {% else %}
+                <p class="text-slate-400 text-lg">{{ profile_user.username }} hasn't shared any photos yet</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

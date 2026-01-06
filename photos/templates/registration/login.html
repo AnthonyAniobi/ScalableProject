@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In - PhotoShare{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="card-dark rounded-2xl p-10 neon-glow">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-slate-100 mb-2">Welcome Back</h2>
+            <p class="text-slate-400">Sign in to continue your journey</p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="bg-red-500/20 border border-red-500/50 text-red-300 px-4 py-3 rounded-xl mb-6 backdrop-blur-sm">
+                    <i class="fas fa-exclamation-circle mr-2"></i>{{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            <div class="mb-6">
+                <label for="{{ form.username.id_for_label }}" class="block text-sm font-semibold text-slate-300 mb-3">
+                    <i class="fas fa-user mr-2 text-cyan-400"></i>Username
+                </label>
+                <input type="text" 
+                       name="{{ form.username.name }}" 
+                       id="{{ form.username.id_for_label }}"
+                       value="{{ form.username.value|default:'' }}"
+                       class="w-full px-4 py-3 input-dark rounded-xl focus:outline-none"
+                       placeholder="Enter your username">
+                {% if form.username.errors %}
+                    <p class="mt-2 text-sm text-red-400"><i class="fas fa-exclamation-triangle mr-1"></i>{{ form.username.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="mb-8">
+                <label for="{{ form.password.id_for_label }}" class="block text-sm font-semibold text-slate-300 mb-3">
+                    <i class="fas fa-lock mr-2 text-cyan-400"></i>Password
+                </label>
+                <div class="relative">
+                    <input type="password" 
+                           name="{{ form.password.name }}" 
+                           id="{{ form.password.id_for_label }}"
+                           class="w-full px-4 py-3 pr-12 input-dark rounded-xl focus:outline-none"
+                           placeholder="Enter your password">
+                    <button type="button"
+                            onclick="togglePassword()"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition-colors">
+                        <i id="toggleIcon" class="fas fa-eye"></i>
+                    </button>
+                </div>
+                {% if form.password.errors %}
+                    <p class="mt-2 text-sm text-red-400"><i class="fas fa-exclamation-triangle mr-1"></i>{{ form.password.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <script>
+                function togglePassword() {
+                    const passwordField = document.getElementById('{{ form.password.id_for_label }}');
+                    const toggleIcon = document.getElementById('toggleIcon');
+                    
+                    if (passwordField.type === 'password') {
+                        passwordField.type = 'text';
+                        toggleIcon.classList.remove('fa-eye');
+                        toggleIcon.classList.add('fa-eye-slash');
+                    } else {
+                        passwordField.type = 'password';
+                        toggleIcon.classList.remove('fa-eye-slash');
+                        toggleIcon.classList.add('fa-eye');
+                    }
+                }
+            </script>
+            
+            <button type="submit" 
+                    class="w-full btn-primary text-white py-4 px-4 rounded-xl font-bold text-lg">
+                <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+            </button>
+        </form>
+        
+        <div class="mt-6 text-center">
+            <a href="{% url 'accounts:password_reset' %}" 
+               class="text-cyan-400 hover:text-cyan-300 transition-colors text-sm">
+                <i class="fas fa-key mr-1"></i>Forgot your password?
+            </a>
+        </div>
+        
+        <div class="mt-6 text-center border-t border-slate-700/50 pt-8">
+            <p class="text-slate-400 text-sm">
+                Don't have an account? 
+                <a href="{% url 'accounts:register' %}" 
+                   class="text-cyan-400 hover:text-cyan-300 transition-colors font-semibold">
+                    Sign up for free
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

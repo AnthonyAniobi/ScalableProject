@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - PhotoShare{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="card-dark rounded-2xl p-10 neon-glow">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-slate-100 mb-2">Join PhotoShare</h2>
+            <p class="text-slate-400">Create an account to start sharing your moments</p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="bg-red-500/20 border border-red-500/50 text-red-300 px-4 py-3 rounded-xl mb-6 backdrop-blur-sm">
+                    <i class="fas fa-exclamation-circle mr-2"></i>{{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            <div class="mb-5">
+                <label for="{{ form.username.id_for_label }}" class="block text-sm font-semibold text-slate-300 mb-3">
+                    <i class="fas fa-user mr-2 text-cyan-400"></i>Username
+                </label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <p class="mt-2 text-sm text-red-400"><i class="fas fa-exclamation-triangle mr-1"></i>{{ form.username.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="mb-5">
+                <label for="{{ form.email.id_for_label }}" class="block text-sm font-semibold text-slate-300 mb-3">
+                    <i class="fas fa-envelope mr-2 text-cyan-400"></i>Email
+                </label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <p class="mt-2 text-sm text-red-400"><i class="fas fa-exclamation-triangle mr-1"></i>{{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="mb-5">
+                <label for="{{ form.password1.id_for_label }}" class="block text-sm font-semibold text-slate-300 mb-3">
+                    <i class="fas fa-lock mr-2 text-cyan-400"></i>Password
+                </label>
+                <div class="relative">
+                    {{ form.password1 }}
+                    <button type="button" onclick="togglePassword('{{ form.password1.id_for_label }}')" 
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition-colors">
+                        <i class="fas fa-eye" id="{{ form.password1.id_for_label }}-icon"></i>
+                    </button>
+                </div>
+                {% if form.password1.errors %}
+                    <p class="mt-2 text-sm text-red-400"><i class="fas fa-exclamation-triangle mr-1"></i>{{ form.password1.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="mb-8">
+                <label for="{{ form.password2.id_for_label }}" class="block text-sm font-semibold text-slate-300 mb-3">
+                    <i class="fas fa-check-circle mr-2 text-cyan-400"></i>Confirm Password
+                </label>
+                <div class="relative">
+                    {{ form.password2 }}
+                    <button type="button" onclick="togglePassword('{{ form.password2.id_for_label }}')" 
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition-colors">
+                        <i class="fas fa-eye" id="{{ form.password2.id_for_label }}-icon"></i>
+                    </button>
+                </div>
+                {% if form.password2.errors %}
+                    <p class="mt-2 text-sm text-red-400"><i class="fas fa-exclamation-triangle mr-1"></i>{{ form.password2.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <script>
+            function togglePassword(fieldId) {
+                const field = document.getElementById(fieldId);
+                const icon = document.getElementById(fieldId + '-icon');
+                
+                if (field.type === 'password') {
+                    field.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    field.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            }
+            </script>
+            
+            <button type="submit" 
+                    class="w-full btn-primary text-white py-4 px-4 rounded-xl font-bold text-lg">
+                <i class="fas fa-user-plus mr-2"></i>Create Account
+            </button>
+        </form>
+        
+        <div class="mt-8 text-center border-t border-slate-700/50 pt-8">
+            <p class="text-slate-400 text-sm">
+                Already have an account? 
+                <a href="{% url 'accounts:login' %}" 
+                   class="text-cyan-400 hover:text-cyan-300 transition-colors font-semibold">
+                    Sign in
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

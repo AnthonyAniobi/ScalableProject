@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - PhotoShare{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="card-dark rounded-2xl p-10 neon-glow">
+        <div class="text-center mb-10">
+            <i class="fas fa-user-edit gradient-text text-6xl mb-6"></i>
+            <h2 class="text-3xl font-bold text-slate-100 mb-2">Edit Profile</h2>
+            <p class="text-slate-400">Update your profile information</p>
+        </div>
+        
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="bg-red-500/20 border border-red-500/50 text-red-300 px-4 py-3 rounded-xl backdrop-blur-sm">
+                    <i class="fas fa-exclamation-circle mr-2"></i>{{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            <!-- Current Profile Photo -->
+            <div class="text-center mb-8">
+                {% if user.profile_photo and user.profile_photo.file %}
+                    <img src="{{ user.profile_photo.file.url }}" alt="Current profile photo" 
+                         class="w-32 h-32 rounded-full object-cover mx-auto border-4 border-cyan-500 neon-glow">
+                {% else %}
+                    <div class="w-32 h-32 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto border-4 border-cyan-500 neon-glow">
+                        <i class="fas fa-user text-white text-4xl"></i>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Profile Photo Upload -->
+            <div>
+                <label for="{{ form.profile_photo.id_for_label }}" class="block text-sm font-semibold text-slate-300 mb-3">
+                    <i class="fas fa-camera mr-2 text-cyan-400"></i>Profile Photo
+                </label>
+                {{ form.profile_photo }}
+                {% if form.profile_photo.errors %}
+                    <p class="mt-2 text-sm text-red-400"><i class="fas fa-exclamation-triangle mr-1"></i>{{ form.profile_photo.errors.0 }}</p>
+                {% endif %}
+                <p class="mt-2 text-sm text-slate-500">Choose a new profile photo (optional)</p>
+            </div>
+            
+            <!-- First Name and Last Name -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-semibold text-slate-300 mb-3">
+                        <i class="fas fa-user mr-2 text-cyan-400"></i>First Name
+                    </label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <p class="mt-2 text-sm text-red-400"><i class="fas fa-exclamation-triangle mr-1"></i>{{ form.first_name.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-semibold text-slate-300 mb-3">
+                        <i class="fas fa-user mr-2 text-cyan-400"></i>Last Name
+                    </label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <p class="mt-2 text-sm text-red-400"><i class="fas fa-exclamation-triangle mr-1"></i>{{ form.last_name.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Email -->
+            <div>
+                <label for="{{ form.email.id_for_label }}" class="block text-sm font-semibold text-slate-300 mb-3">
+                    <i class="fas fa-envelope mr-2 text-cyan-400"></i>Email
+                </label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <p class="mt-2 text-sm text-red-400"><i class="fas fa-exclamation-triangle mr-1"></i>{{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Bio -->
+            <div>
+                <label for="{{ form.bio.id_for_label }}" class="block text-sm font-semibold text-slate-300 mb-3">
+                    <i class="fas fa-pen mr-2 text-cyan-400"></i>Bio
+                </label>
+                {{ form.bio }}
+                {% if form.bio.errors %}
+                    <p class="mt-2 text-sm text-red-400"><i class="fas fa-exclamation-triangle mr-1"></i>{{ form.bio.errors.0 }}</p>
+                {% endif %}
+                <p class="mt-2 text-sm text-slate-500">Tell us about yourself</p>
+            </div>
+            
+            <!-- Website -->
+            <div>
+                <label for="{{ form.website.id_for_label }}" class="block text-sm font-semibold text-slate-300 mb-3">
+                    <i class="fas fa-globe mr-2 text-cyan-400"></i>Website
+                </label>
+                {{ form.website }}
+                {% if form.website.errors %}
+                    <p class="mt-2 text-sm text-red-400"><i class="fas fa-exclamation-triangle mr-1"></i>{{ form.website.errors.0 }}</p>
+                {% endif %}
+                <p class="mt-2 text-sm text-slate-500">Your personal website or social media link</p>
+            </div>
+            
+            <!-- Submit Buttons -->
+            <div class="flex justify-between pt-6 border-t border-slate-700/50">
+                <a href="{% url 'accounts:profile' user.username %}" 
+                   class="px-8 py-3.5 border border-slate-600 rounded-xl text-slate-300 hover:bg-slate-700/50 transition-all font-semibold">
+                    <i class="fas fa-times mr-2"></i>Cancel
+                </a>
+                <button type="submit" 
+                        class="px-8 py-3.5 btn-primary text-white rounded-xl font-semibold">
+                    <i class="fas fa-save mr-2"></i>Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
