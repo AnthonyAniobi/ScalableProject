@@ -9,21 +9,21 @@ DEBUG = True
 
 INSTALLED_APPS +=['storages']
 
-ALLOWED_HOSTS = ['*'] 
+# ALLOWED_HOSTS = ['*'] 
 
 # CORS_ALLOW_ALL_ORIGINS = True  
 
-# ALLOWED_HOSTS = [
-#     '127.0.0.1',
-#     'localhost',
-#     '13.48.134.225',
-#     'scalable.thankfulground-41ada081.swedencentral.azurecontainerapps.io',
-# ] 
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    '13.48.134.225',
+    'chukucontainer.nicesky-c567a244.francecentral.azurecontainerapps.io',
+] 
 
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1",
     "http://13.48.134.225",
-    "https://scalable.thankfulground-41ada081.swedencentral.azurecontainerapps.io",
+    "https://chukucontainer.nicesky-c567a244.francecentral.azurecontainerapps.io",
 ]
 
 # Allow all origins (temporary - development only!)
